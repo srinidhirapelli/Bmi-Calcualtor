@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Professional BMI Calculator</title>
+<style>
+  /* Pink-themed background */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f8bbd0, #f48fb1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  .app {
+    background: white;
+    padding: 30px 35px;
+    width: 360px;
+    border-radius: 15px;
+    box-shadow: 0 12px 20px rgba(244, 143, 177, 0.4);
+    text-align: center;
+  }
+  
+  h2 {
+    margin-bottom: 25px;
+    color: #880e4f;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 12px 14px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: 2px solid #f48fb1;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  input:focus, select:focus {
+    border-color: #ad1457;
+    box-shadow: 0 0 8px #f48fb1;
+  }
+  
+  button {
+    width: 100%;
+    padding: 12px;
+    background-color: #ad1457;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: 0 6px 12px rgba(173, 20, 87, 0.6);
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #880e4f;
+  }
+  
+  #result {
+    margin-top: 20px;
+    font-weight: 700;
+    font-size: 18px;
+    color: #880e4f;
+    white-space: pre-line;
+  }
+  
+  /* BMI Meter */
+  .meter {
+    width: 100%;
+    height: 22px;
+    border-radius: 12px;
+    background: linear-gradient(
+      to right,
+      #90caf9 0%,
+      #90caf9 25%,
+      #a5d6a7 25%,
+      #a5d6a7 50%,
+      #ffb74d 50%,
+      #ffb74d 75%,
+      #ef9a9a 75%,
+      #ef9a9a 100%
+    );
+    margin-top: 25px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+  }
+  
+  .pointer {
+    width: 6px;
+    height: 28px;
+    background: #880e4f;
+    position: absolute;
+    top: -5px;
+    left: 0%;
+    border-radius: 3px;
+    transition: left 1.2s ease-in-out;
+    box-shadow: 0 0 6px #880e4f;
+  }
+  
+  .labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-top: 6px;
+    color: #880e4f;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <h2>BMI Calculator</h2>
+  <input type="number" id="age" placeholder="Age (years)" min="1" />
+  
+  <select id="gender">
+    <option value="">Select Gender</option>
+    <option>Male</option>
+    <option>Female</option>
+  </select>
+  
+  <input type="number" id="height" placeholder="Height (feet, e.g. 5.2)" min="0" step="0.01" />
+  
+  <input type="number" id="weight" placeholder="Weight (kg)" min="0" step="0.1" />
+  
+  <button onclick="calculateBMI()">Calculate BMI</button>
+  
+  <div id="result"></div>
+  
+  <div class="meter">
+    <div class="pointer" id="pointer"></div>
+  </div>
+  
+  <div class="labels">
+    <span>Under</span>
+    <span>Normal</span>
+    <span>Over</span>
+    <span>Obese</span>
+  </div>
+</div>
+
+<script>
+function calculateBMI() {
+  let age = document.getElementById("age").value.trim();
+  let gender = document.getElementById("gender").value;
+  let heightFeet = document.getElementById("height").value.trim();
+  let weight = document.getElementById("weight").value.trim();
+
+  if (!age || !gender || !heightFeet || !weight || age <= 0 || heightFeet <= 0 || weight <= 0) {
+    document.getElementById("result").innerText = "Please enter all valid details.";
+    document.getElementById("pointer").style.left = "0%";
+    return;
+  }
+
+  // Convert height from feet to meters
+  let heightMeters = parseFloat(heightFeet) * 0.3048;
+
+  let bmi = parseFloat(weight) / (heightMeters * heightMeters);
+  bmi = parseFloat(bmi.toFixed(2));
+
+  let category = "";
+  let percent = 0;
+
+  if (bmi < 18.5) {
+    category = "Underweight";
+    percent = (bmi / 18.5) * 25;
+  } else if (bmi < 25) {
+    category = "Normal";
+    percent = 25 + ((bmi - 18.5) / (25 - 18.5)) * 25;
+  } else if (bmi < 30) {
+    category = "Overweight";
+    percent = 50 + ((bmi - 25) / (30 - 25)) * 25;
+  } else {
+    category = "Obese";
+    percent = 75 + Math.min(((bmi - 30) / 10) * 25, 25);
+  }
+
+  document.getElementById("result").innerText =
+    `Age: ${age} years\nGender: ${gender}\nBMI: ${bmi} (${category})`;
+
+  // Animate pointer smoothly
+  document.getElementById("pointer").style.left = percent + "%";
+}
+</script>
+
+</body>
+</html>
